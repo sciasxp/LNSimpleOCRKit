@@ -1,6 +1,6 @@
 # LNSimpleOCRKit
 
-[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleNetwork?include_prereleases)](https://github.com/sciasxp/LNSimpleNetwork/releases/tag/v1.0.0)
+[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleOCRKit?include_prereleases)](https://github.com/sciasxp/LNSimpleOCRKit/releases/tag/v1.0.0)
 
 
 With this project I tried to simplify, as much em possible, the use of Apple's OCR.
