@@ -1,6 +1,6 @@
 # LNSimpleOCRKit
 
-[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleNetwork?include_prereleases)](https://github.com/sciasxp/LNSimpleNetwork/releases/tag/v0.1.0)
+[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleNetwork?include_prereleases)](https://github.com/sciasxp/LNSimpleNetwork/releases/tag/v1.0.0)
 
 
 With this project I tried to simplify, as much em possible, the use of Apple's OCR.
@@ -42,7 +42,7 @@ Done!
 
 That's it, simple as that.
 
-## Advance Use
+## Advanced Usage
 
 There are some callbacks and configurations you can apply if you choose so.
 
@@ -66,9 +66,9 @@ You are also able to preprocess your image and post process the detected text vi
 Here how you do it:
 ```swift
 let ocrConfiguration = OCRConfiguration(language: .english, type: .accurate, languageCorrection: true)
-let ocrKit = LNSimpleOCRKit(configuration: ocrConfiguration)
-    let model = LNSimpleOCRKit(preprocessor: { image in
+let ocrKit = LNSimpleOCRKit(preprocessor: { image in
     return image.resizableImage(withCapInsets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
+    
 }, postprocessor: { text in
     var processed = text
     processed = processed.trimmingCharacters(in: .whitespacesAndNewlines)
