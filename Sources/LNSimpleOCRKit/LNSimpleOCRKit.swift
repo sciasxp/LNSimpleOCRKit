@@ -26,7 +26,7 @@ public class LNSimpleOCRKit {
     
     // MARK: - Initializer
     
-    init(preprocessor: PreProcessOCRImage? = nil,
+    public init(preprocessor: PreProcessOCRImage? = nil,
          postprocessor: PostProcessOCRText? = nil,
          configuration: OCRConfiguration = OCRConfiguration.default()) {
         

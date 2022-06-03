@@ -81,7 +81,7 @@ public struct OCRConfiguration {
     let type: OCRDetectionType
     let languageCorrection: Bool
     
-    static func `default`() -> OCRConfiguration {
+    public static func `default`() -> OCRConfiguration {
         return OCRConfiguration(language: .automatic, type: .accurate, languageCorrection: false)
     }
 }
