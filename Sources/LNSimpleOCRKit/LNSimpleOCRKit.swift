@@ -35,6 +35,10 @@ public class LNSimpleOCRKit {
         self.configuration = configuration
     }
     
+    public init() {
+        self.configuration = OCRConfiguration.default()
+    }
+    
     // MARK: - Public API
     
     public func detectText(for image: UIImage,

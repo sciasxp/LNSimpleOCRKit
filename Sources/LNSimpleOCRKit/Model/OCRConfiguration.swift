@@ -15,7 +15,7 @@ public struct OCRConfiguration {
         case fast
         case accurate
         
-        var regocgnitionLevel: VNRequestTextRecognitionLevel {
+        public var regocgnitionLevel: VNRequestTextRecognitionLevel {
             let level: VNRequestTextRecognitionLevel
             
             switch self {
