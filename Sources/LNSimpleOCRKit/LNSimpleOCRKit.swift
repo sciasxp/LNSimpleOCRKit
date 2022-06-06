@@ -7,6 +7,7 @@ public class LNSimpleOCRKit {
     
     public enum OCRError: Error {
         case preprocessorError
+        case mergeTextError
         case postprocessorError
         case visionError
     }
@@ -14,6 +15,7 @@ public class LNSimpleOCRKit {
     // MARK: - Type Alias
     
     public typealias TextDetectionResult = (Result<String, OCRError>) -> Void
+    public typealias TextObservationsResult = (Result<[VNRecognizedTextObservation], OCRError>) -> Void
     public typealias TextDetectionProgress = (Double) -> Void
     public typealias PreProcessOCRImage = (UIImage) -> UIImage
     public typealias PostProcessOCRText = (String) -> String
@@ -41,6 +43,26 @@ public class LNSimpleOCRKit {
     
     // MARK: - Public API
     
+    public func recognizedObservations(for image: UIImage,
+                                       detectionProgress: TextDetectionProgress? = nil,
+                                       result: @escaping TextObservationsResult) {
+        
+        guard let cgImage = try? getPreprocessedImage(image) else {
+            result(.failure(OCRError.preprocessorError))
+            return
+        }
+        
+        self.getObservations(from: cgImage, detectionProgress: detectionProgress) { detectionResult in
+            switch detectionResult {
+            case .success(let observations):
+                result(.success(observations))
+                
+            case .failure(let error):
+                result(.failure(error))
+            }
+        }
+    }
+    
     public func detectText(for image: UIImage,
                            detectionProgress: TextDetectionProgress? = nil,
                            result: @escaping TextDetectionResult) {
@@ -50,9 +72,14 @@ public class LNSimpleOCRKit {
             return
         }
         
-        self.getText(from: cgImage, detectionProgress: detectionProgress) { [weak self] detectionResult in
+        self.getObservations(from: cgImage, detectionProgress: detectionProgress) { [weak self] detectionResult in
             switch detectionResult {
-            case .success(let text):
+            case .success(let observations):
+                guard let text = self?.mergedText(for: observations) else {
+                    result(.failure(OCRError.mergeTextError))
+                    return
+                }
+                
                 guard let processedText = self?.postProcessText(text) else {
                     result(.failure(OCRError.postprocessorError))
                     return
@@ -64,6 +91,20 @@ public class LNSimpleOCRKit {
                 result(.failure(error))
             }
         }
+    }
+    
+    private func mergedText(for observations: [VNRecognizedTextObservation]) -> String {
+        let text = observations.reduce("") { partialResult, observation in
+            guard let textObserved = observation.topCandidates(1).first else { return partialResult }
+            if partialResult.last == "-" {
+                var string = "\(partialResult)"
+                string.remove(at: partialResult.index(before: partialResult.endIndex))
+                return string + textObserved.string
+            } else {
+                return partialResult + " " + textObserved.string
+            }
+        }
+        return text
     }
     
     // MARK: - Helper Methods
@@ -83,9 +124,9 @@ public class LNSimpleOCRKit {
         return processedImage
     }
     
-    private func getText(from cgImage: CGImage,
+    private func getObservations(from cgImage: CGImage,
                          detectionProgress: TextDetectionProgress?,
-                         result: @escaping TextDetectionResult) {
+                         result: @escaping TextObservationsResult) {
         
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         let request = VNRecognizeTextRequest { request, error in
@@ -94,22 +135,11 @@ public class LNSimpleOCRKit {
             }
             
             guard let observations = request.results as? [VNRecognizedTextObservation] else {
-                result(.success(""))
+                result(.success([]))
                 return
             }
             
-            let text = observations.reduce("") { partialResult, observation in
-                guard let textObserved = observation.topCandidates(1).first else { return partialResult }
-                if partialResult.last == "-" {
-                    var string = "\(partialResult)"
-                    string.remove(at: partialResult.index(before: partialResult.endIndex))
-                    return string + textObserved.string
-                } else {
-                    return partialResult + " " + textObserved.string
-                }
-            }
-            
-            result(.success(text))
+            result(.success(observations))
         }
         
         if cgImage.height > 200 {
