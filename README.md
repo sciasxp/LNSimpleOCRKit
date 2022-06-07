@@ -11,12 +11,22 @@ This framework will be usable by iOS 13 and above or MacOS 10.15 and above.
 
 ## Installing
 
+### SPM
+
 **LNSimpleOCRKit is available via SwiftPackage.**
 
 Add the following to you Package.swift file's dependencies:
 
 ```swift
 .package(url: "https://github.com/sciasxp/LNSimpleOCRKit.git", from: "1.1.0"),
+```
+
+### CocoaPods
+
+To integrate LNSimpleOCRKit into your project using CocoaPods, specify it in your Podfile:
+
+```Ruby
+pod 'LNSimpleOCRKit'
 ```
 
 ## How to Use
