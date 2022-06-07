@@ -24,12 +24,20 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "LNSimpleOCRKit",
-            dependencies: []),
+            dependencies: [],
+            swiftSettings: [
+                .define(
+                    "EXCLUDED_ARCHS[sdk=iphonesimulator*]='arm64'",
+                    .when(platforms: [.iOS], configuration: .debug)
+                )
+            ]
+        ),
         .testTarget(
             name: "LNSimpleOCRKitTests",
             dependencies: ["LNSimpleOCRKit"],
             resources: [.process("Assets")]),
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
 
 let version = Version("1.0.0")
