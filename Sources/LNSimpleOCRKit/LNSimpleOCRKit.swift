@@ -23,17 +23,14 @@ public class LNSimpleOCRKit {
     // MARK: - Properties
     
     private var preprocessor: PreProcessOCRImage?
-    private var postprocessor: PostProcessOCRText?
     private let configuration: OCRConfiguration
     
     // MARK: - Initializer
     
     public init(preprocessor: PreProcessOCRImage? = nil,
-         postprocessor: PostProcessOCRText? = nil,
-         configuration: OCRConfiguration = OCRConfiguration.default()) {
+                configuration: OCRConfiguration = OCRConfiguration.default()) {
         
         self.preprocessor = preprocessor
-        self.postprocessor = postprocessor
         self.configuration = configuration
     }
     
@@ -65,6 +62,7 @@ public class LNSimpleOCRKit {
     
     public func detectText(for image: UIImage,
                            detectionProgress: TextDetectionProgress? = nil,
+                           postprocessor: PostProcessOCRText? = nil,
                            result: @escaping TextDetectionResult) {
         
         guard let cgImage = try? getPreprocessedImage(image) else {
@@ -80,11 +78,13 @@ public class LNSimpleOCRKit {
                     return
                 }
                 
-                guard let processedText = self?.postProcessText(text) else {
-                    result(.failure(OCRError.postprocessorError))
+                guard let processText = postprocessor else {
+                    //result(.failure(OCRError.postprocessorError))
+                    result(.success(text))
                     return
                 }
                 
+                let processedText = processText(text)
                 result(.success(processedText))
                 
             case .failure(let error):
@@ -166,13 +166,5 @@ public class LNSimpleOCRKit {
         } catch {
             result(.failure(OCRError.visionError))
         }
-    }
-    
-    private func postProcessText(_ text: String) -> String {
-        guard let postprocessor = self.postprocessor else {
-            return text
-        }
-        
-        return postprocessor(text)
     }
 }
