@@ -161,11 +161,10 @@ final class LNSimpleOCRKitTests: XCTestCase {
         return try await withCheckedThrowingContinuation { continuation in
             
             let model = LNSimpleOCRKit(
-                preprocessor: nil,
-                postprocessor: postProcess
+                preprocessor: nil
             )
             
-            model.detectText(for: image) { result in
+            model.detectText(for: image, postprocessor: postProcess) { result in
                 switch result {
                 case .success(let text):
                     continuation.resume(with: .success(text))
