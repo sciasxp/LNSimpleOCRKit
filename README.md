@@ -1,6 +1,6 @@
 # LNSimpleOCRKit
 
-[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleOCRKit?include_prereleases)](https://github.com/sciasxp/LNSimpleOCRKit/releases/tag/v1.0.0)
+[![Version](https://img.shields.io/github/v/release/sciasxp/LNSimpleOCRKit?include_prereleases)](https://github.com/sciasxp/LNSimpleOCRKit/releases/tag/v1.1.0)
 
 
 With this project I tried to simplify, as much em possible, the use of Apple's OCR.
@@ -16,7 +16,7 @@ This framework will be usable by iOS 13 and above or MacOS 10.15 and above.
 Add the following to you Package.swift file's dependencies:
 
 ```swift
-.package(url: "https://github.com/sciasxp/LNSimpleOCRKit.git", from: "1.0.0"),
+.package(url: "https://github.com/sciasxp/LNSimpleOCRKit.git", from: "1.1.0"),
 ```
 
 ## How to Use
@@ -61,29 +61,59 @@ let ocrKit = LNSimpleOCRKit(configuration: ocrConfiguration)
 
 ### Callbacks
 
-You are also able to preprocess your image and post process the detected text via closures if you so want.
+You are able to preprocess your image via closure if you so want.
 
 Here how you do it:
 ```swift
 let ocrConfiguration = OCRConfiguration(language: .english, type: .accurate, languageCorrection: true)
 let ocrKit = LNSimpleOCRKit(preprocessor: { image in
-    return image.resizableImage(withCapInsets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
-    
-}, postprocessor: { text in
+        return image.resizableImage(withCapInsets: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
+    }, 
+    configuration: ocrConfiguration)
+```
+
+Also post-process a detected text and display detection progress.
+
+```Swift
+let ocrKit = LNSimpleOCRKit()
+ocrKit.detectText(for: image) { progress in
+    print("Detection progress: \(progress * 100)%")
+} postprocessor: { text in
     var processed = text
     processed = processed.trimmingCharacters(in: .whitespacesAndNewlines)
     return processed
-    
-}, configuration: ocrConfiguration)
+} result: { result in
+    switch result {
+    case .success(let text):
+        print(text)
+        
+    case .failure(let error):
+        print(error.localizedDescription)
+    }
+}
+```
+
+### Other Public API
+
+There is a method to receive all the raw observations ([VNRecognizedTextObservation]).
+
+```Swift
+let ocrKit = LNSimpleOCRKit()
+ocrKit.recognizedObservations(for: image) { result in
+    switch result {
+    case .success(let observations):
+        return observations
+        
+    case .failure(let error):
+        print(error.localizedDescription)
+    }
+}
 ```
 
 ## Future Work
-
-1. Also make post processing per detectText call.
-2. Make it a cocoapod.
-3. Improve unit tests.
-4. Improve documentation.
-5. Document detection progress callback.
+1. Make it a cocoapod.
+2. Improve unit tests.
+3. Improve documentation.
 
 ## Contributing
 
