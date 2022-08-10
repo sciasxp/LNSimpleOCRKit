@@ -97,7 +97,7 @@ final class LNSimpleOCRKitTests: XCTestCase {
     func testOCRKitTeste_Palavras_2() async throws {
         let image = getImage(named: "Teste Palavras 2")!
         let sut = try await getText(for: image)
-        
+        // Abreu comer maçã
         XCTAssertTrue(sut == "Abreu comeu a maçã", "Not specting \(sut)")
     }
 
@@ -112,21 +112,21 @@ final class LNSimpleOCRKitTests: XCTestCase {
         let image = getImage(named: "ABC2357")!
         let sut = try await getText(for: image)
         
-        XCTAssertTrue(sut == "SP-TREMEMBE ABC-2357", "Not specting \(sut)")
+        XCTAssertTrue(sut == "SP-TREMEMBÉ ABC-2357", "Not specting \(sut)")
     }
     
     func testOCRKitAMZ2X19() async throws {
         let image = getImage(named: "AMZ2X19")!
         let sut = try await getText(for: image)
         
-        XCTAssertTrue(sut == "BRASIL AMZ2X19 BR", "Not specting \(sut)")
+        XCTAssertTrue(sut == "BRASIL BR AMZ2X19", "Not specting \(sut)")
     }
     
     func testOCRKitBCD3456() async throws {
         let image = getImage(named: "BCD3456")!
         let sut = try await getText(for: image)
-        
-        XCTAssertTrue(sut == "PR • SAO JOSE DOS PINHAIS BCD-3456", "Not specting \(sut)")
+        // CHIREOSR PR • SÃO JOSÉ DOS PINHAIS 0NSPR2UI3 BCD-3456
+        XCTAssertTrue(sut == "PR • SÃO JOSÉ DOS PINHAIS BCD-3456", "Not specting \(sut)")
     }
     
     func testOCRKitBCV6I89() async throws {
@@ -139,7 +139,7 @@ final class LNSimpleOCRKitTests: XCTestCase {
     func testOCRKitBRA0S17() async throws {
         let image = getImage(named: "BRA0S17")!
         let sut = try await getText(for: image)
-        
+        // BRAOS17
         XCTAssertTrue(sut == "BRA0S17", "Not specting \(sut)")
     }
     
@@ -160,8 +160,15 @@ final class LNSimpleOCRKitTests: XCTestCase {
     func getText(for image: UIImage) async throws -> String {
         return try await withCheckedThrowingContinuation { continuation in
             
-            let model = LNSimpleOCRKit(
-                preprocessor: nil
+            let configuration = OCRConfiguration (
+                language: .automatic(revision: .revision2),
+                type: .accurate,
+                languageCorrection: false
+            )
+            
+            let model = LNSimpleOCRKit (
+                preprocessor: nil,
+                configuration: configuration
             )
             
             model.detectText(for: image, postprocessor: postProcess) { result in

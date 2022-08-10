@@ -121,9 +121,8 @@ ocrKit.recognizedObservations(for: image) { result in
 ```
 
 ## Future Work
-1. Make it a cocoapod.
-2. Improve unit tests.
-3. Improve documentation.
+1. Improve unit tests.
+2. Improve documentation.
 
 ## Contributing
 

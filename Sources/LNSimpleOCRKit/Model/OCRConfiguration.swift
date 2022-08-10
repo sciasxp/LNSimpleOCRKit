@@ -29,11 +29,16 @@ public struct OCRConfiguration {
         }
     }
     
+    public enum OCRAutomaticRevision {
+        case revision2
+        case revision3
+    }
+    
     public enum OCRDetectionLanguage {
         case portuguese
         case spanish
         case english
-        case automatic
+        case automatic(revision: OCRAutomaticRevision)
         
         var recognitionLanguages: [String] {
             let languages: [String]
@@ -58,18 +63,33 @@ public struct OCRConfiguration {
             switch self {
             case .english:
                 revisionCode = VNRecognizeTextRequestRevision1
+                
             case .portuguese, .spanish:
-                if #available(iOS 14.0, *) {
+                if #available(iOS 16.0, *) {
+                    revisionCode = VNRecognizeTextRequestRevision3
+                } else if #available(iOS 14.0, *) {
                     revisionCode = VNRecognizeTextRequestRevision2
                 } else {
                     revisionCode = VNRecognizeTextRequestRevision1
                 }
+                
+            case .automatic(let revision):
+                switch revision {
+                case .revision2:
+                    if #available(iOS 14.0, *) {
+                        revisionCode = VNRecognizeTextRequestRevision2
+                    } else {
+                        revisionCode = VNRecognizeTextRequestRevision1
+                    }
                     
-            default:
-                if #available(iOS 14.0, *) {
-                    revisionCode = VNRecognizeTextRequestRevision2
-                } else {
-                    revisionCode = VNRecognizeTextRequestRevision1
+                case .revision3:
+                    if #available(iOS 16.0, *) {
+                        revisionCode = VNRecognizeTextRequestRevision3
+                    } else if #available(iOS 14.0, *) {
+                        revisionCode = VNRecognizeTextRequestRevision2
+                    } else {
+                        revisionCode = VNRecognizeTextRequestRevision1
+                    }
                 }
             }
             
@@ -82,6 +102,10 @@ public struct OCRConfiguration {
     let languageCorrection: Bool
     
     public static func `default`() -> OCRConfiguration {
-        return OCRConfiguration(language: .automatic, type: .accurate, languageCorrection: false)
+        return OCRConfiguration (
+            language: .automatic(revision: .revision2),
+            type: .accurate,
+            languageCorrection: false
+        )
     }
 }

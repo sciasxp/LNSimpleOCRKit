@@ -27,8 +27,10 @@ public class LNSimpleOCRKit {
     
     // MARK: - Initializer
     
-    public init(preprocessor: PreProcessOCRImage? = nil,
-                configuration: OCRConfiguration = OCRConfiguration.default()) {
+    public init (
+        preprocessor: PreProcessOCRImage? = nil,
+        configuration: OCRConfiguration = OCRConfiguration.default()
+    ) {
         
         self.preprocessor = preprocessor
         self.configuration = configuration
@@ -79,7 +81,6 @@ public class LNSimpleOCRKit {
                 }
                 
                 guard let processText = postprocessor else {
-                    //result(.failure(OCRError.postprocessorError))
                     result(.success(text))
                     return
                 }
@@ -124,9 +125,11 @@ public class LNSimpleOCRKit {
         return processedImage
     }
     
-    private func getObservations(from cgImage: CGImage,
-                         detectionProgress: TextDetectionProgress?,
-                         result: @escaping TextObservationsResult) {
+    private func getObservations (
+        from cgImage: CGImage,
+        detectionProgress: TextDetectionProgress?,
+        result: @escaping TextObservationsResult
+    ) {
         
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
         let request = VNRecognizeTextRequest { request, error in
@@ -152,7 +155,10 @@ public class LNSimpleOCRKit {
         request.preferBackgroundProcessing = false
         
         request.recognitionLevel = configuration.type.regocgnitionLevel
-        if configuration.language != .automatic {
+        if configuration.language.recognitionLanguages.contains(where: { language in
+            language == "en_US" || language == "pt_BR" || language == "es"
+        }) {
+            
             request.recognitionLanguages = configuration.language.recognitionLanguages
         }
         request.revision = configuration.language.revision
