@@ -40,7 +40,7 @@ public struct OCRConfiguration {
         case english
         case automatic(revision: OCRAutomaticRevision)
         
-        var recognitionLanguages: [String] {
+        public var recognitionLanguages: [String] {
             let languages: [String]
             
             switch self {
@@ -57,7 +57,7 @@ public struct OCRConfiguration {
             return languages
         }
         
-        var revision: Int {
+        public var revision: Int {
             let revisionCode: Int
             
             switch self {
@@ -100,6 +100,12 @@ public struct OCRConfiguration {
     let language: OCRDetectionLanguage
     let type: OCRDetectionType
     let languageCorrection: Bool
+    
+    public init(language: OCRDetectionLanguage, type: OCRDetectionType, languageCorrection: Bool) {
+        self.language = language
+        self.type = type
+        self.languageCorrection = languageCorrection
+    }
     
     public static func `default`() -> OCRConfiguration {
         return OCRConfiguration (
